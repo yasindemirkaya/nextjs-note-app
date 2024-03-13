@@ -1,32 +1,34 @@
 import NoteGrid from '../components/notes/note-grid'
-import { connectToDatabase } from '@/utils/db'
+import { getAllNotes } from '../utils/notes/api-requests'
 
 function Home(props) {
   return (
     <div className='container'>
       <h1 className='my-2'>My Notes</h1>
-      <NoteGrid notes={props.notes} />
+      {props.notes.length > 0 ? (
+        <NoteGrid notes={props.notes} />
+      ) : (
+        <div>{props.error}</div>
+      )}
+
     </div>
   );
 }
 
-export async function getStaticProps() {
-  try {
-    const db = await connectToDatabase();
-    const collection = db.collection('notes');
-    console.log('Collection: ', collection)
-    const data = await collection.find({}).toArray();
-    console.log('Data: ', data)
+export async function getServerSideProps() {
+  const notes = await getAllNotes();
+  if (notes.status === 200) {
     return {
       props: {
-        notes: data
-      },
-    };
-  } catch (error) {
-    console.error('Error fetching data:', error);
+        notes: notes.data
+      }
+    }
+  } else {
     return {
-      props: { data: [] },
-    };
+      props: {
+        error: 'Error fetching notes. Please try again later.'
+      }
+    }
   }
 }
 

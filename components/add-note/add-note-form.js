@@ -1,16 +1,25 @@
 import { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
+import { addNewNote } from '../../utils/notes/api-requests'
 
 function AddNoteForm({ onAdd }) {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
-        console.log(title, description)
 
-        setTitle('')
-        setDescription('')
+        try {
+            const newNote = await addNewNote(title, description);
+
+            onAdd(newNote);
+            setTitle('')
+            setDescription('')
+        } catch (error) {
+            console.error('Failed to add note: ', error)
+            setTitle('')
+            setDescription('')
+        }
     }
 
     return (
