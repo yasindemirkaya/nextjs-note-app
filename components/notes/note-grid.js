@@ -1,20 +1,18 @@
 import NoteItem from './note-item'
 import classes from './note-grid.module.scss'
 import { deleteNote } from '../../utils/notes/api-requests'
-import { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useSelector, useDispatch } from 'react-redux'
+import { setNotes } from '../../store/reducers/note-reducer'
 
-function NoteGrid({ notes }) {
-    const router = useRouter();
-    const [updatedNotes, setUpdatedNotes] = useState(notes);
+function NoteGrid() {
+    const dispatch = useDispatch()
+    const { notes } = useSelector((state) => state.notes)
 
     const handleDeleteNote = async (noteId) => {
         try {
             await deleteNote(noteId);
-            const newNotes = updatedNotes.filter(note => note._id !== noteId);
-            setUpdatedNotes(newNotes);
-            alert('Note deleted successfully.')
-            router.reload();
+            const newNotes = notes.filter(note => note._id !== noteId);
+            dispatch(setNotes(newNotes))
         } catch (error) {
             console.error('Failed to delete note:', error);
         }
