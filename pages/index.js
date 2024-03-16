@@ -1,11 +1,16 @@
 import NoteGrid from '../components/notes/note-grid'
 import { getAllNotes } from '../utils/notes/api-requests'
+import { useSelector, useDispatch } from 'react-redux'
 
 function Home(props) {
+  const dispatch = useDispatch()
+  dispatch(setNotes(props))
+  const notes = useSelector(state => state.notes)
+
   return (
     <div className='container'>
       <h1 className='my-2'>My Notes</h1>
-      {props.notes.length > 0 ? (
+      {notes.length > 0 ? (
         <NoteGrid notes={props.notes} />
       ) : (
         <div>{props.error}</div>
